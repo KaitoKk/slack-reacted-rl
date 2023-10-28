@@ -1,4 +1,4 @@
-# slack-reacted-rl
+# slack-reaction-rl
 
 This is a sample template for slack-reacted-rl - Below is a brief explanation of what we have generated for you:
 

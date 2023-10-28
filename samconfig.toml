@@ -4,7 +4,7 @@ version = 0.1
 
 [default]
 [default.global.parameters]
-stack_name = "slack-reacted-rl"
+stack_name = "slack-reaction-rl"
 
 [default.build.parameters]
 cached = true
