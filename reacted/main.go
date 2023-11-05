@@ -1,28 +1,25 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var greeting string
-	sourceIP := request.RequestContext.Identity.SourceIP
+func handler(request context.Context) (events.LambdaFunctionURLResponse, error) {
+	// events.LambdaFunctionURLRequest{}
+	fmt.Println(request)
 
-	if sourceIP == "" {
-		greeting = "Hello, world!\n"
-	} else {
-		greeting = fmt.Sprintf("Hello, %s!\n", sourceIP)
-	}
+	greeting := "Hello World"
 
-	return events.APIGatewayProxyResponse{
-		Body:       greeting,
+	return events.LambdaFunctionURLResponse{
 		StatusCode: 200,
+		Body:       "{\"message\": \"" + greeting + "\"}",
 	}, nil
 }
 
-func main() {
+func bootstrap() {
 	lambda.Start(handler)
 }
