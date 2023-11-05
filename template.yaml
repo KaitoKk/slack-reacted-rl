@@ -18,20 +18,15 @@ Resources:
       BuildMethod: go1.x
     Properties:
       CodeUri: reacted/
-      Handler: bootstrap
+      Handler: main
       Runtime: provided.al2
       Architectures:
       - x86_64
-      Events:
-        CatchAll:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /hello
-            Method: GET
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
-
+      FunctionUrlConfig:
+        AuthType: NONE
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
@@ -46,15 +41,12 @@ Resources:
         Ref: ApplicationResourceGroup
       AutoConfigurationEnabled: 'true'
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldAPI:
-    Description: API Gateway endpoint URL for Prod environment for First Function
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
+  ReactedFunction:
     Description: First Lambda Function ARN
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
+    Value: !GetAtt ReactedFunction.Arn
+  ReactedFunctionIamRole:
     Description: Implicit IAM Role created for Hello World function
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+    Value: !GetAtt ReactedFunctionRole.Arn
+  FunctionUrl:
+    Description: Lambda Function URL
+    Value: !GetAtt ReactedFunction.Url
