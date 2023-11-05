@@ -20,6 +20,6 @@ func handler(request context.Context) (events.LambdaFunctionURLResponse, error) 
 	}, nil
 }
 
-func bootstrap() {
+func main() {
 	lambda.Start(handler)
 }
