@@ -24,7 +24,12 @@ Resources:
       - x86_64
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
-          PARAM1: VALUE
+          NOTION_API_KEY_PATH: "/rl/NOTION_API_KEY"
+          NOTION_DATABASE_ID_PATH: "/rl/NOTION_DATABASE_ID"
+          SLACK_BOT_TOKEN_PATH: "/rl/SLACK_BOT_TOKEN"
+      Policies:
+        - SSMParameterReadPolicy:
+            ParameterName: rl/*
       FunctionUrlConfig:
         AuthType: NONE
   ApplicationResourceGroup:
