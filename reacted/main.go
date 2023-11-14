@@ -3,9 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ssm"
+	"os"
 )
 
 type RequestType struct {
@@ -36,11 +39,24 @@ type Item struct {
 	TS      string `json:"ts"`
 }
 
+var (
+	notionApiKey     string
+	notionDatabaseId string
+	slackBotToken    string
+)
+
 func handler(request events.LambdaFunctionURLRequest) (events.LambdaFunctionURLResponse, error) {
 	// events.LambdaFunctionURLRequest{}
 	fmt.Println(request.Body)
+
 	var reqType RequestType
 	err := json.Unmarshal([]byte(request.Body), &reqType)
+	if err != nil {
+		fmt.Println(err)
+		return events.LambdaFunctionURLResponse{}, err
+	}
+
+	err = loadSSMParameters()
 	if err != nil {
 		fmt.Println(err)
 		return events.LambdaFunctionURLResponse{}, err
@@ -88,4 +104,32 @@ func handler(request events.LambdaFunctionURLRequest) (events.LambdaFunctionURLR
 
 func main() {
 	lambda.Start(handler)
+}
+
+func loadSSMParameters() error {
+	sess, err := session.NewSession()
+	if err != nil {
+		return err
+	}
+
+	svc := ssm.New(sess)
+
+	values, err := svc.GetParameters(&ssm.GetParametersInput{
+		Names: []*string{
+			aws.String(os.Getenv("NOTION_API_KEY_PATH")),
+			aws.String(os.Getenv("NOTION_DATABASE_ID_PATH")),
+			aws.String(os.Getenv("SLACK_BOT_TOKEN_PATH")),
+		},
+		WithDecryption: aws.Bool(true),
+	})
+
+	if err != nil {
+		return err
+	}
+
+	notionApiKey = *values.Parameters[0].Value
+	notionDatabaseId = *values.Parameters[1].Value
+	slackBotToken = *values.Parameters[2].Value
+
+	return nil
 }
