@@ -76,14 +76,20 @@ func handler(request events.LambdaFunctionURLRequest) (events.LambdaFunctionURLR
 	}
 
 	if reqType.Type == "event_callback" {
-		var event ReactionEvent
+		var event RequestEvent
 		err := json.Unmarshal([]byte(request.Body), &event)
 		if err != nil {
 			fmt.Println(err)
 			return events.LambdaFunctionURLResponse{}, err
 		}
-		// Itemからメッセージの内容を取得する
 
+		// Itemからメッセージの内容を取得する
+		message, err := getMessage(event.Event.Item.Channel, event.Event.Item.TS)
+		if err != nil {
+			fmt.Println(err)
+			return events.LambdaFunctionURLResponse{}, err
+		}
+		fmt.Println(message)
 		// メッセージからリンクをパースする
 
 		// rlを使ってNotionに書き込む
