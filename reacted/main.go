@@ -9,6 +9,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"os"
+	"regexp"
+	"slack-reacted-rl/rl"
 )
 
 type RequestType struct {
@@ -91,8 +93,13 @@ func handler(request events.LambdaFunctionURLRequest) (events.LambdaFunctionURLR
 		}
 		fmt.Println(message)
 		// メッセージからリンクをパースする
-
+		url := parseUrl(message)
 		// rlを使ってNotionに書き込む
+		err = rl.RL(url, notionApiKey, notionDatabaseId)
+		if err != nil {
+			fmt.Println(err)
+			return events.LambdaFunctionURLResponse{}, err
+		}
 
 		return events.LambdaFunctionURLResponse{
 			StatusCode: 200,
@@ -138,4 +145,9 @@ func loadSSMParameters() error {
 	slackBotToken = *values.Parameters[2].Value
 
 	return nil
+}
+
+func parseUrl(message string) string {
+	r := regexp.MustCompile(`https?://[\w/:%#\$&\?\(\)~\.=\+\-]+`)
+	return r.FindString(message)
 }
