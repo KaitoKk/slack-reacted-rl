@@ -95,6 +95,11 @@ func handler(request events.LambdaFunctionURLRequest) (events.LambdaFunctionURLR
 		// メッセージからリンクをパースする
 		url := parseUrl(message)
 		// rlを使ってNotionに書き込む
+		err = rl.RL(url, notionApiKey, notionDatabaseId)
+		if err != nil {
+			fmt.Println(err)
+			return events.LambdaFunctionURLResponse{}, err
+		}
 
 		return events.LambdaFunctionURLResponse{
 			StatusCode: 200,
