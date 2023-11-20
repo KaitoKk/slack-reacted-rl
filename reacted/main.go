@@ -87,6 +87,7 @@ func handler(request events.LambdaFunctionURLRequest) (events.LambdaFunctionURLR
 
 		// リアクションがrlスタンプじゃなければ終了
 		if event.Event.Reaction != "rl" {
+			fmt.Println("not rl reaction")
 			return events.LambdaFunctionURLResponse{
 				StatusCode: 200,
 				Body:       "{\"message\": \"reacted another reaction\"}",
