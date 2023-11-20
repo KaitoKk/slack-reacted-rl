@@ -85,6 +85,14 @@ func handler(request events.LambdaFunctionURLRequest) (events.LambdaFunctionURLR
 			return events.LambdaFunctionURLResponse{}, err
 		}
 
+		// リアクションがrlスタンプじゃなければ終了
+		if event.Event.Reaction != "rl" {
+			return events.LambdaFunctionURLResponse{
+				StatusCode: 200,
+				Body:       "{\"message\": \"reacted another reaction\"}",
+			}, nil
+		}
+
 		// Itemからメッセージの内容を取得する
 		message, err := getMessage(event.Event.Item.Channel, event.Event.Item.TS)
 		if err != nil {
